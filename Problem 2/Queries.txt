@@ -1,0 +1,71 @@
+SELECT genre, COUNT(*) AS number_of_songs
+FROM song_genres
+GROUP BY genre
+ORDER BY number_of_songs DESC
+LIMIT 3;
+
+SELECT DISTINCT artist_name
+FROM artists
+WHERE artist_id IN (SELECT artist_id FROM songs WHERE album_id IS NULL)
+  AND artist_id IN (SELECT artist_id FROM songs WHERE album_id IS NOT NULL);
+
+SELECT album_name, AVG(rating) AS average_user_rating
+FROM ratings
+JOIN albums ON ratings.album_id = albums.album_id
+WHERE YEAR(rating_date) BETWEEN 1990 AND 1999
+GROUP BY album_name
+ORDER BY average_user_rating DESC, album_name
+LIMIT 10;
+
+SELECT genre_name, COUNT(rating_id) AS number_of_song_ratings
+FROM ratings
+JOIN songs ON ratings.song_id = songs.song_id
+JOIN song_genres ON songs.song_id = song_genres.song_id
+WHERE YEAR(rating_date) BETWEEN 1991 AND 1995
+GROUP BY genre_name
+ORDER BY number_of_song_ratings DESC
+LIMIT 3;
+
+SELECT users.username, playlists.playlist_title, AVG(ratings.rating) AS average_song_rating
+FROM playlists
+JOIN playlist_songs ON playlists.playlist_id = playlist_songs.playlist_id
+JOIN songs ON playlist_songs.song_id = songs.song_id
+JOIN ratings ON songs.song_id = ratings.song_id
+JOIN users ON playlists.user_id = users.user_id
+GROUP BY playlists.playlist_id
+HAVING average_song_rating >= 4.0;
+
+SELECT username, COUNT(*) AS number_of_ratings
+FROM ratings
+JOIN users ON ratings.user_id = users.user_id
+WHERE song_id IS NOT NULL OR album_id IS NOT NULL
+GROUP BY username
+ORDER BY number_of_ratings DESC
+LIMIT 5;
+
+SELECT artist_name, COUNT(song_id) AS number_of_songs
+FROM songs
+JOIN artists ON songs.artist_id = artists.artist_id
+WHERE YEAR(release_date) BETWEEN 1990 AND 2010
+GROUP BY artist_name
+ORDER BY number_of_songs DESC
+LIMIT 10;
+
+SELECT song_title, COUNT(playlist_id) AS number_of_playlists
+FROM playlist_songs
+JOIN songs ON playlist_songs.song_id = songs.song_id
+GROUP BY song_title
+ORDER BY number_of_playlists DESC, song_title
+LIMIT 10;
+
+SELECT song_title, artist_name, COUNT(rating_id) AS number_of_ratings
+FROM ratings
+JOIN songs ON ratings.song_id = songs.song_id
+WHERE album_id IS NULL
+GROUP BY song_title, artist_name
+ORDER BY number_of_ratings DESC
+LIMIT 20;
+
+SELECT artist_name
+FROM artists
+WHERE artist_id NOT IN (SELECT artist_id FROM songs WHERE YEAR(release_date) > 1993);
