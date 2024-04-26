@@ -1,63 +1,73 @@
-create table artist (
-    id smallint auto_increment primary key,
-    name varchar(255) not null,
-    unique (name));
-    
-create table song ( 
-    id smallint auto_increment primary key, 
-    title varchar(255) not null, 
-    release_date date not null, 
-    artist_id smallint not null,
-    album_name varchar(255),
-    foreign key (artist_id) references artist(id), 
-    foreign key (album_name) references album(title),
-    constraint artist_title unique (title, artist_id));
+CREATE TABLE Artist (
+    Artist_ID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(255) UNIQUE NOT NULL
+);
 
-create table album ( 
-    id smallint auto_increment primary key, 
-    title varchar(255) not null, 
-    artist_id smallint not null, 
-    release_date date not null, 
-    foreign key (artist_id) references artist(id), 
-    constraint album_artist unique (title, artist_id));
-    
-create table genre ( 
-    id smallint auto_increment primary key, 
-    name varchar(50) not null, 
-    unique (name));
-    
-create table song_genre ( 
-    song_id smallint not null, 
-    genre_id smallint not null, 
-    constraint genre_of_song unique (song_id,genre_id));
-    
-create table user ( 
-    id smallint auto_increment primary key, 
-    username varchar(50) not null, 
-    unique (username));
-    
-create table playlist ( 
-    id smallint auto_increment primary key, 
-    title varchar(255) not null, 
-    created_at datetime not null, 
-    user_id smallint not null, 
-    constraint playlist_title unique (title,user_id), 
-    foreign key (user_id) references user(id));
-    
-create table song_playlist (
-    song_id smallint not null,
-    playlist_id smallint not null,
-    primary key (song_id, playlist_id),
-    foreign key (song_id) references song(id),
-    foreign key (playlist_id) references playlist(id));
-    
-create table rating ( 
-    id smallint auto_increment primary key, 
-    user_id smallint not null, 
-    entity_type enum('song','album','playlist') not null, 
-    entity_id smallint not null, 
-    rating tinyint not null check (rating >= 1 and rating <=5), 
-    created_at date not null,
-    foreign key (user_id) references user(id));
-    
-    
+CREATE TABLE Genre (
+    Genre_ID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(255) UNIQUE NOT NULL
+);
+
+CREATE TABLE User (
+    User_ID INT AUTO_INCREMENT PRIMARY KEY,
+    Username VARCHAR(255) UNIQUE NOT NULL
+);
+
+CREATE TABLE Album (
+    Album_ID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(255) NOT NULL,
+    Artist_ID INT NOT NULL,
+    Release_Date DATE NOT NULL,
+    UNIQUE (Name, Artist_ID),
+    FOREIGN KEY (Artist_ID) REFERENCES Artist(Artist_ID)
+);
+
+CREATE TABLE Song (
+    Song_ID INT AUTO_INCREMENT PRIMARY KEY,
+    Title VARCHAR(255) NOT NULL,
+    Artist_ID INT NOT NULL,
+    Album_ID INT,
+    Release_Date DATE,
+    UNIQUE (Title, Artist_ID),
+    FOREIGN KEY (Artist_ID) REFERENCES Artist(Artist_ID),
+    FOREIGN KEY (Album_ID) REFERENCES Album(Album_ID)
+);
+
+CREATE TABLE Song_Genre (
+    Song_ID INT NOT NULL,
+    Genre_ID INT NOT NULL,
+    PRIMARY KEY (Song_ID, Genre_ID),
+    FOREIGN KEY (Song_ID) REFERENCES Song(Song_ID),
+    FOREIGN KEY (Genre_ID) REFERENCES Genre(Genre_ID)
+);
+
+CREATE TABLE Playlist (
+    Playlist_ID INT AUTO_INCREMENT PRIMARY KEY,
+    User_ID INT NOT NULL,
+    Title VARCHAR(255) NOT NULL,
+    Creation_Date DATETIME NOT NULL,
+    FOREIGN KEY (User_ID) REFERENCES User(User_ID)
+);
+
+CREATE TABLE Playlist_Song (
+    Playlist_ID INT NOT NULL,
+    Song_ID INT NOT NULL,
+    PRIMARY KEY (Playlist_ID, Song_ID),
+    FOREIGN KEY (Playlist_ID) REFERENCES Playlist(Playlist_ID),
+    FOREIGN KEY (Song_ID) REFERENCES Song(Song_ID)
+);
+
+CREATE TABLE Rating (
+    Rating_ID INT AUTO_INCREMENT PRIMARY KEY,
+    User_ID INT NOT NULL,
+    Song_ID INT,
+    Album_ID INT,
+    Playlist_ID INT,
+    Rating TINYINT NOT NULL CHECK (Rating BETWEEN 1 AND 5),
+    Rating_Date DATE NOT NULL,
+    FOREIGN KEY (User_ID) REFERENCES User(User_ID),
+    FOREIGN KEY (Song_ID) REFERENCES Song(Song_ID),
+    FOREIGN KEY (Album_ID) REFERENCES Album(Album_ID),
+    FOREIGN KEY (Playlist_ID) REFERENCES Playlist(Playlist_ID)
+);
+
